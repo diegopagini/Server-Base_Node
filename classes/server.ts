@@ -57,7 +57,7 @@ export default class Server {
 			/**
 			 * Cuando se reciba un mensaje.
 			 */
-			socket.message(cliente);
+			socket.message(cliente, this.io);
 
 			/**
 			 * Cuando se produzca una desconección.
