@@ -1,9 +1,10 @@
 /** @format */
 
 import express from 'express';
-import socketIO from 'socket.io';
+import socketIO, { Socket } from 'socket.io';
 import http from 'http';
 import { SERVER_PORT } from '../global/environment';
+import * as socket from '../sockets/sockets';
 
 /**
  * Definimos nuestra clase servidor.
@@ -45,10 +46,23 @@ export default class Server {
 	/**
 	 * Método para escuchar nuestros sockets.
 	 */
-	private listenSockets() {
+	private listenSockets(): void {
 		console.log('Escuchando conexiones - sockets');
-		this.io.on('connection', (cliente) => {
-			console.log('Cliente conectado');
+		/**
+		 * Cuando se produzca una conección.
+		 */
+		this.io.on('connection', (cliente: Socket) => {
+			console.log('Cliente conectado.');
+
+			/**
+			 * Cuando se reciba un mensaje.
+			 */
+			socket.message(cliente);
+
+			/**
+			 * Cuando se produzca una desconección.
+			 */
+			socket.disconnect(cliente);
 		});
 	}
 }
