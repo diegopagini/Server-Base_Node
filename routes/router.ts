@@ -8,19 +8,35 @@ import Server from '../classes/server';
  */
 const router = Router();
 
+/**
+ * Ruta para mensajes públicos.
+ */
+
 router.get('/mensajes', (req: Request, res: Response) => {
 	res.json({ ok: true, mensaje: 'GET - Ready' });
 });
 
+/**
+ * Ruta para mensajes públicos.
+ */
+
 router.post('/mensajes', (req: Request, res: Response) => {
-	const body = req.body.body;
-	const from = req.body.from;
+	const { body, from } = req.body;
+	const server = Server.instance;
+	const payload = {
+		from,
+		body,
+	};
+	server.io.emit('new-message', payload);
 	res.json({ ok: true, body, from });
 });
 
+/**
+ * Ruta para mensajes privados.
+ */
+
 router.post('/mensajes/:id', (req: Request, res: Response) => {
-	const body = req.body.body;
-	const from = req.body.from;
+	const { body, from } = req.body;
 	const id = req.params.id;
 	const payload = {
 		from,
