@@ -11,12 +11,28 @@ import { UserList } from '../classes/user-list';
 export const connectedUsers = new UserList();
 
 /**
+ * Método para agregar un cliente a nuestra lista de conectados.
+ * @param {Socket} client
+ * @param {socketIO.Server} io
+ */
+export const connectClient = (client: Socket, io: socketIO.Server) => {
+	const user = new User(client.id);
+	connectedUsers.add(user);
+};
+
+/**
  * Para desconectar al cliente.
  * @param {Socket} client
+ * @param {socketIO.Serve} io
+ *
  */
-export const disconnect = (client: Socket) => {
+export const disconnect = (client: Socket, io: socketIO.Server) => {
 	client.on('disconnect', () => {
 		connectedUsers.deleteUser(client.id);
+		/**
+		 * Cuando se realice una desconeccíon emitimos el valor actualizado de la lista de usuarios.
+		 */
+		io.emit('active-users', connectedUsers.getList());
 	});
 };
 
@@ -29,11 +45,6 @@ export const message = (client: Socket, io: socketIO.Server) => {
 	client.on(
 		'message',
 		(payload: { from: string; body: string }, callback: Function) => {
-			/**
-			 * Cuando se recibe un mensaje.
-			 */
-			console.log('Mensaje recibido', payload);
-
 			/**
 			 * Para emitir nuestro último mensaje.
 			 */
@@ -54,6 +65,13 @@ export const configureUser = (client: Socket, io: socketIO.Server) => {
 		(payload: { name: string }, callback: Function) => {
 			connectedUsers.updateName(client.id, payload.name);
 
+			/**
+			 * Cuando se conecte un usuario enviamos la lista de usuarios.
+			 */
+			setTimeout(() => {
+				io.emit('active-users', connectedUsers.getList());
+			}, 50);
+
 			callback({
 				ok: true,
 				message: `Usuario ${payload.name} configurado.`,
@@ -63,10 +81,16 @@ export const configureUser = (client: Socket, io: socketIO.Server) => {
 };
 
 /**
- * Método para agregar un cliente a nuestra lista de conectados.
+ * Para esuchar la lista de usuarios.
  * @param {Socket} client
+ * @param {socketIO.Server} io
  */
-export const connectClient = (client: Socket) => {
-	const user = new User(client.id);
-	connectedUsers.add(user);
+
+export const getUsers = (client: Socket, io: socketIO.Server) => {
+	client.on('get-users', () => {
+		/**
+		 * Cuando se conecte un usuario enviamos la lista de usuarios.
+		 */
+		io.to(client.id).emit('active-users', connectedUsers.getList());
+	});
 };

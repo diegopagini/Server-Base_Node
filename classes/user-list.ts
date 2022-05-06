@@ -28,7 +28,6 @@ export class UserList {
 			if (user.id === id) user.name = name;
 			break;
 		}
-		console.log(this.list);
 	}
 
 	/**
@@ -37,7 +36,7 @@ export class UserList {
 	 */
 
 	getList(): User[] {
-		return this.list;
+		return this.list.filter((el: User) => el.name !== 'no-name');
 	}
 
 	/**

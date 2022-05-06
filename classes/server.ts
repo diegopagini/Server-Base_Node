@@ -47,7 +47,7 @@ export default class Server {
 	 * Método para escuchar nuestros sockets.
 	 */
 	private listenSockets(): void {
-		console.log('Escuchando conexiones - sockets');
+		// console.log('Escuchando conexiones - sockets');
 		/**
 		 * Cuando se produzca una conección.
 		 */
@@ -55,12 +55,17 @@ export default class Server {
 			/**
 			 * Conectar cliente
 			 */
-			socket.connectClient(cliente);
+			socket.connectClient(cliente, this.io);
 
 			/**
 			 * Cuando se loguee un usuario.
 			 */
 			socket.configureUser(cliente, this.io);
+
+			/**
+			 * Obtener usuarios activos.
+			 */
+			socket.getUsers(cliente, this.io);
 
 			/**
 			 * Cuando se reciba un mensaje.
@@ -70,7 +75,7 @@ export default class Server {
 			/**
 			 * Cuando se produzca una desconección.
 			 */
-			socket.disconnect(cliente);
+			socket.disconnect(cliente, this.io);
 		});
 	}
 }
