@@ -1,6 +1,14 @@
 /** @format */
 
 import socketIO, { Socket } from 'socket.io';
+import { User } from '../classes/user';
+import { UserList } from '../classes/user-list';
+
+/**
+ * Instancia de mi lista de usuarios.
+ */
+
+export const connectedUsers = new UserList();
 
 /**
  * Para desconectar al cliente.
@@ -8,14 +16,14 @@ import socketIO, { Socket } from 'socket.io';
  */
 export const disconnect = (client: Socket) => {
 	client.on('disconnect', () => {
-		// console.log('Cliente desconectado.');
+		connectedUsers.deleteUser(client.id);
 	});
 };
 
 /**
  * Para escuchar mensajes.
  * @param {Socket} client
- *  @param {socketIO.Server} io
+ * @param {socketIO.Server} io
  */
 export const message = (client: Socket, io: socketIO.Server) => {
 	client.on(
@@ -44,10 +52,7 @@ export const configureUser = (client: Socket, io: socketIO.Server) => {
 	client.on(
 		'configure-user',
 		(payload: { name: string }, callback: Function) => {
-			/**
-			 * Cuando se logea un usuario.
-			 */
-			console.log('Configurando usuario', payload.name);
+			connectedUsers.updateName(client.id, payload.name);
 
 			callback({
 				ok: true,
@@ -55,4 +60,13 @@ export const configureUser = (client: Socket, io: socketIO.Server) => {
 			});
 		}
 	);
+};
+
+/**
+ * Método para agregar un cliente a nuestra lista de conectados.
+ * @param {Socket} client
+ */
+export const connectClient = (client: Socket) => {
+	const user = new User(client.id);
+	connectedUsers.add(user);
 };

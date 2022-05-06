@@ -52,7 +52,15 @@ export default class Server {
 		 * Cuando se produzca una conección.
 		 */
 		this.io.on('connection', (cliente: Socket) => {
-			// console.log('Cliente conectado.');
+			/**
+			 * Conectar cliente
+			 */
+			socket.connectClient(cliente);
+
+			/**
+			 * Cuando se loguee un usuario.
+			 */
+			socket.configureUser(cliente, this.io);
 
 			/**
 			 * Cuando se reciba un mensaje.
@@ -63,11 +71,6 @@ export default class Server {
 			 * Cuando se produzca una desconección.
 			 */
 			socket.disconnect(cliente);
-
-			/**
-			 * Cuando se loguee un usuario.
-			 */
-			socket.configureUser(cliente, this.io);
 		});
 	}
 }
