@@ -2,8 +2,9 @@
 
 import { Router, Request, Response } from 'express';
 import { GraphicData } from '../classes/graphics';
-import Server from '../classes/server';
 import { connectedUsers } from '../sockets/sockets';
+import { Map } from '../classes/map';
+import Server from '../classes/server';
 
 /**
  * Router utilizado para crear los endpoints.
@@ -11,10 +12,24 @@ import { connectedUsers } from '../sockets/sockets';
 const router = Router();
 
 /**
- * Instancia de nuestro clase gráfica
+ * Instancia de nuestro clase gráfica.
  */
 
 const graphics = new GraphicData();
+
+/**
+ * Instancia de nuestra clase mapa.
+ */
+
+const map = new Map();
+
+/**
+ * Ruta para obtener nuestro mapa.
+ */
+
+router.get('/mapa', (req: Request, res: Response) => {
+	res.json(map.getMarkers());
+});
 
 /**
  * Ruta para obtener nuestra gráfica.
