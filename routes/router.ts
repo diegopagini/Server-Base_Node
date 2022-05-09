@@ -3,7 +3,7 @@
 import { Router, Request, Response } from 'express';
 import { GraphicData } from '../classes/graphics';
 import { connectedUsers } from '../sockets/sockets';
-import { Map } from '../classes/map';
+import { map } from '../sockets/sockets';
 import Server from '../classes/server';
 
 /**
@@ -16,12 +16,6 @@ const router = Router();
  */
 
 const graphics = new GraphicData();
-
-/**
- * Instancia de nuestra clase mapa.
- */
-
-const map = new Map();
 
 /**
  * Ruta para obtener nuestro mapa.

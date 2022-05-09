@@ -36,4 +36,13 @@ export class Map {
 		this.markers[marker.id].lng = marker.lng;
 		this.markers[marker.id].lat = marker.lat;
 	}
+
+	/**
+	 * Método para agregar un marcador.
+	 * @param {Marker} marker
+	 */
+
+	addMarker(marker: Marker): void {
+		this.markers[marker.id] = marker;
+	}
 }

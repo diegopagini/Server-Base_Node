@@ -58,6 +58,11 @@ export default class Server {
 			socket.connectClient(cliente, this.io);
 
 			/**
+			 * Cuando haya un cambio en nuestros mapas.
+			 */
+			socket.mapSockets(cliente, this.io);
+
+			/**
 			 * Cuando se loguee un usuario.
 			 */
 			socket.configureUser(cliente, this.io);

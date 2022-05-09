@@ -2,7 +2,9 @@
 
 import socketIO, { Socket } from 'socket.io';
 import { User } from '../classes/user';
+import { Map } from '../classes/map';
 import { UserList } from '../classes/user-list';
+import { Marker } from '../classes/marker';
 
 /**
  * Instancia de mi lista de usuarios.
@@ -11,10 +13,53 @@ import { UserList } from '../classes/user-list';
 export const connectedUsers = new UserList();
 
 /**
+ * Instancia de mi clase de mapa.
+ */
+
+export const map = new Map();
+
+/**
+ * Eventos de mapas.
+ */
+
+export const mapSockets = (cliente: Socket, io: socketIO.Server) => {
+	/**
+	 * Para agregar un marcador.
+	 */
+	cliente.on('new-marker', (marker: Marker) => {
+		map.addMarker(marker);
+
+		// Para emitir a todo el mundo menos al usuario que lo está enviando.
+		cliente.broadcast.emit('marker-added', marker);
+	});
+
+	/**
+	 * Para eliminar un marcador.
+	 */
+	cliente.on('delete-marker', (id: string) => {
+		map.deleteMarker(id);
+
+		// Para emitir a todo el mundo menos al usuario que lo está enviando.
+		cliente.broadcast.emit('marker-deleted', id);
+	});
+
+	/**
+	 * Para mover un marcador.
+	 */
+	cliente.on('move-marker', (marker: Marker) => {
+		map.moveMarker(marker);
+
+		// Para emitir a todo el mundo menos al usuario que lo está enviando.
+		cliente.broadcast.emit('marker-moved', marker);
+	});
+};
+
+/**
  * Método para agregar un cliente a nuestra lista de conectados.
  * @param {Socket} client
  * @param {socketIO.Server} io
  */
+
 export const connectClient = (client: Socket, io: socketIO.Server) => {
 	const user = new User(client.id);
 	connectedUsers.add(user);
@@ -26,6 +71,7 @@ export const connectClient = (client: Socket, io: socketIO.Server) => {
  * @param {socketIO.Serve} io
  *
  */
+
 export const disconnect = (client: Socket, io: socketIO.Server) => {
 	client.on('disconnect', () => {
 		connectedUsers.deleteUser(client.id);
@@ -41,6 +87,7 @@ export const disconnect = (client: Socket, io: socketIO.Server) => {
  * @param {Socket} client
  * @param {socketIO.Server} io
  */
+
 export const message = (client: Socket, io: socketIO.Server) => {
 	client.on(
 		'message',
